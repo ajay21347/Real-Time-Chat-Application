@@ -1,0 +1,102 @@
+body {
+  font-family: "Poppins", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+}
+
+.left-section {
+  flex: 1;
+  background: linear-gradient(135deg, #4b6cb7, #182848);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.right-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f7f9fb;
+}
+
+#login-module,
+#register-module {
+  background-color: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+}
+
+#login-module h2,
+#register-module h2 {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #4b6cb7;
+}
+
+#login-module label,
+#register-module label {
+  margin: 10px 0 4px;
+  font-weight: 600;
+  color: #333;
+}
+
+#login-module input,
+#register-module input {
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+#login-module button,
+#register-module button {
+  margin-top: 15px;
+  padding: 10px;
+  background: #4b6cb7;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#login-module button:hover,
+#register-module button:hover {
+  background: #3a5493;
+}
+
+.error-msg {
+  color: red;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+#new-user,
+#back-to-login {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #666;
+  cursor: pointer;
+}
+
+#new-user:hover,
+#back-to-login:hover {
+  color: #4b6cb7;
+  text-decoration: underline;
+}
+
+#register-module {
+  display: none;
+}
