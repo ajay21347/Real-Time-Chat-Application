@@ -1,100 +1,157 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>Chat Room</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Theme dropdown fix */
+      #themeSelect {
+        background-color: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      /* Dropdown options */
+      #themeSelect option {
+        background-color: #1e293b; /* dark slate */
+        color: #ffffff;
+      }
+
+      /* Hover / selected option */
+      #themeSelect option:checked,
+      #themeSelect option:hover {
+        background-color: #2563eb;
+        color: #ffffff;
+      }
+    </style>
   </head>
 
-  <body class="flex h-screen bg-gray-100 font-[Poppins]">
-    <input type="hidden" id="username" value="{{username}}" />
-    <!--Hamburger Menu-->
+  <body class="m-0 p-0 flex h-screen bg-gray-100 font-[Poppins]">
+    <!-- USERNAME -->
+    <input type="hidden" id="username" value="{{ username }}" />
+
+    <!-- ☰ HAMBURGER -->
     <div
       id="menuBtn"
       onclick="toggleSidebar()"
-      class="fixed top-4 left-4 text-gray-300 text-3xl cursor-pointer z-50"
+      class="fixed top-4 left-4 text-gray-300 text-3xl cursor-pointer z-50 select-none"
     >
       ☰
     </div>
 
-    <!--Side Bar-->
+    <!-- SIDEBAR -->
     <div
       id="sidebar"
-      class="fixed left-0 top-0 h-full w-64 text-white -translate-x-full transition-transform duration-300 bg-[linear-gradient(135deg,#2c3e50,#4a90e2)] z-40"
+      class="fixed top-0 left-0 h-full w-64 text-white -translate-x-full transition-transform duration-300 bg-gradient-to-br from-slate-800 to-blue-500 z-40"
     >
-      <div class="text-center mt-6">
+      <div class="text-center mt-8">
         <img
-          src="{{ url_for('static', filename='images/user.png') }}"
+          src="https://ui-avatars.com/api/?name={{ username }}&background=random&color=fff&rounded=true"
           class="w-20 h-20 rounded-full mx-auto border-2 border-white mb-3"
         />
-        <h3 class="text-lg font-semibold">{{username}}</h3>
 
+        <h3 class="text-lg font-semibold">{{ username }}</h3>
+
+        <!-- Logout -->
         <form action="/logout" method="GET">
           <button
-            type="submit"
-            class="mt-4 px-4 py-2 bg-white/20 hover:bg-white/30 rounded transition"
+            class="mt-4 px-4 py-2 bg-white/20 hover:bg-white/30 rounded transition w-3/4"
           >
             Logout
           </button>
         </form>
+
+        <!-- Theme Selector -->
+        <div class="mt-4 px-6">
+          <label class="block text-sm mb-1 text-white/80">Theme</label>
+
+          <select
+            id="themeSelect"
+            class="w-full px-3 py-2 rounded bg-white/20 text-white outline-none cursor-pointer"
+            onchange="applyTheme(this.value)"
+          >
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+            <option value="purple">Purple</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+
+        <!-- Dark / Light Toggle Button -->
+        <button
+          id="modeToggleBtn"
+          onclick="toggleDarkLight()"
+          class="mt-4 px-4 py-2 bg-white/20 hover:bg-white/30 rounded transition w-3/4"
+        >
+          🌙 Switch to Dark Mode
+        </button>
       </div>
     </div>
 
-    <!--Chat List-->
-    <div class="w-1/3 border-r border-gray-300 bg-white">
+    <!-- CHAT LIST -->
+    <div class="w-1/3 border-r border-gray-300 bg-white flex flex-col">
       <div class="bg-blue-500 text-center text-white p-4 font-semibold text-lg">
-        <h2>Chats</h2>
+        Chats
         <input
-          type="text"
-          placeholder="Search or start a new chat"
           id="searchBar"
-          class="w-11/12 mx-auto mt-3 px-3 py-2 border rounded-full text-gray-800"
+          placeholder="Search or start a new chat"
+          class="w-11/12 mx-auto mt-3 px-3 py-2 border rounded-full text-gray-800 outline-none"
         />
       </div>
 
-      <div
-        id="userList"
-        class="overflow-y-auto h-[calc(100vh-120px)] mt-4"
-      ></div>
+      <div id="userList" class="flex-1 overflow-y-auto"></div>
     </div>
 
-    <!--Chat Window-->
+    <!-- CHAT WINDOW -->
     <div class="flex-1 flex flex-col bg-gray-100">
       <div
         class="flex items-center gap-3 p-4 bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow"
       >
         <img
-          src="{{ url_for('static', filename='images/user.png') }}"
+          src="https://ui-avatars.com/api/?name={{ username }}&background=random&color=fff&rounded=true"
           class="w-10 h-10 rounded-full"
         />
+
         <h3 class="text-lg font-semibold">Chat</h3>
       </div>
 
-      <div class="chat-header p-3 text-center bg-white border-b">
+      <div class="p-3 text-center bg-white border-b">
         <h2 id="chatHeader" class="text-lg font-semibold text-gray-700">
           Select a user
         </h2>
+        <div
+          id="typingIndicator"
+          class="text-sm text-gray-500 px-4 py-1 italic"
+        ></div>
       </div>
 
-      <div class="chat-messages flex-1 p-3 overflow-y-auto space-y-2"></div>
+      <!-- MESSAGES -->
+      <div
+        class="chat-messages flex-1 p-4 overflow-y-auto flex flex-col gap-2 bg-gray-100"
+      ></div>
 
-      <!--Message Input-->
-      <div class="flex items-center p-3 bg-white border-t">
+      <!-- INPUT -->
+      <div class="flex items-center p-3 bg-white border-t gap-2">
         <input
           id="messageInput"
-          type="text"
-          placeholder="Type your message.."
-          class="flex-1 px-3 py-2 border rounded-full bg-gray-200 outline-none"
+          placeholder="Type your message..."
+          class="flex-1 px-4 py-2 border rounded-full bg-gray-200 outline-none"
         />
         <button
           id="sendBtn"
-          class="ml-2 w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 text-white text-xl flex items-center justify-center"
+          class="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 text-white text-xl flex items-center justify-center hover:scale-105 transition"
         >
           ➤
         </button>
       </div>
     </div>
 
-    <!-- Load chat.js -->
+    <!-- External Scripts ONLY -->
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="/static/chat.js"></script>
   </body>
